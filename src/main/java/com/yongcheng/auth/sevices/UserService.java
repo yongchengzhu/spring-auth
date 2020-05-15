@@ -1,5 +1,7 @@
 package com.yongcheng.auth.sevices;
 
+import javax.transaction.Transactional;
+
 import com.yongcheng.auth.models.User;
 import com.yongcheng.auth.repositories.UserRepository;
 
@@ -8,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class UserService {
 
   @Autowired
