@@ -11,29 +11,28 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long userId;
+  private Long id;
 
   @Column(unique = true)
   private String email;
 
+  @Column(length = 60) // BCrypt generates a password of length 60.
   private String password;
 
-  private Boolean isVerified;
+  private Boolean enabled;
 
-  // Constructor
-  public User(String email, String password, Boolean isVerified) {
+  public User(String email, String password, Boolean enabled) {
     this.email = email;
     this.password = password;
-    this.isVerified = isVerified;
+    this.enabled = enabled;
   }
 
-  // Getters and Setters
-  public Long getUserId() {
-    return userId;
+  public Long getId() {
+    return id;
   }
 
-  public void setUserId(Long userId) {
-    this.userId = userId;
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getEmail() {
@@ -52,11 +51,11 @@ public class User {
     this.password = password;
   }
 
-  public Boolean isVerified() {
-    return isVerified;
+  public Boolean getEnabled() {
+    return enabled;
   }
 
-  public void setVerified(Boolean isVerified) {
-    this.isVerified = isVerified;
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
   }
 }
