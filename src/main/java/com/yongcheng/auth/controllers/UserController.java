@@ -1,14 +1,17 @@
 package com.yongcheng.auth.controllers;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.yongcheng.auth.events.OnRegistrationCompleteEvent;
+import com.yongcheng.auth.exceptions.UserAlreadyExistException;
 import com.yongcheng.auth.models.User;
 import com.yongcheng.auth.payloads.ApiResponse;
 import com.yongcheng.auth.payloads.SignupRequest;
 import com.yongcheng.auth.sevices.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,23 +26,30 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-  @PostMapping("/signup")
-  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
-    final String email       = signupRequest.getEmail();
-    final String password    = signupRequest.getPassword();
-    final Boolean isVerified = false;
-    
-    final User user = new User(email, password, isVerified);
+  @Autowired
+  private ApplicationEventPublisher eventPublisher;
 
-    userService.save(user);
-    
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.setLocation(null); // Set the location of the resource later.
-    
-    return new ResponseEntity<ApiResponse>(
-      new ApiResponse(true, "User signup successful."), 
-      responseHeaders, 
-      HttpStatus.CREATED
+  @PostMapping("/signup")
+  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest, HttpServletRequest req) {
+    final String email    = signupRequest.getEmail();
+    final String password = signupRequest.getPassword();
+    final User   user     = new User(email, password);
+
+    try {
+      userService.save(user);
+      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(req.getContextPath(), user));
+    } catch (UserAlreadyExistException e) {
+      return new ResponseEntity<>(
+        new ApiResponse(e.getMessage(), e), HttpStatus.BAD_REQUEST
+      );
+    } catch (RuntimeException e) {
+      return new ResponseEntity<>(
+        new ApiResponse(e.getMessage(), e), HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    return new ResponseEntity<>(
+      new ApiResponse("User signup successful."), HttpStatus.CREATED
     );
   }
 }

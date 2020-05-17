@@ -21,6 +21,16 @@ public class User {
 
   private Boolean enabled;
 
+  public User() {
+
+  }
+
+  public User(String email, String password) {
+    this.email = email;
+    this.password = password;
+    this.enabled = false;
+  }
+
   public User(String email, String password, Boolean enabled) {
     this.email = email;
     this.password = password;
