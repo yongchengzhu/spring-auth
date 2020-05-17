@@ -19,7 +19,6 @@ public class OnRegistrationCompleteListener implements ApplicationListener<OnReg
 	public void onApplicationEvent(OnRegistrationCompleteEvent event) {
     // 1. Generate a UUID as verification token.
     // 2. Send verification email to user's email.
-
     String token = UUID.randomUUID().toString();
     VerificationToken verificationToken = new VerificationToken(token, event.getUser());
     

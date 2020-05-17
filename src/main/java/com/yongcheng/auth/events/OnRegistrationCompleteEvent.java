@@ -6,22 +6,12 @@ import org.springframework.context.ApplicationEvent;
 
 @SuppressWarnings("serial")
 public class OnRegistrationCompleteEvent extends ApplicationEvent {
-  private String appUrl;
   private User user;
 
-  public OnRegistrationCompleteEvent(String appUrl, User user) {
+  public OnRegistrationCompleteEvent(User user) {
     super(user);
 
-    this.appUrl = appUrl;
     this.user = user;
-  }
-
-  public String getAppUrl() {
-    return appUrl;
-  }
-
-  public void setAppUrl(String appUrl) {
-    this.appUrl = appUrl;
   }
 
   public User getUser() {

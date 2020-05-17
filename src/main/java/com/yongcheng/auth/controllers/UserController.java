@@ -10,6 +10,8 @@ import com.yongcheng.auth.payloads.ApiResponse;
 import com.yongcheng.auth.payloads.SignupRequest;
 import com.yongcheng.auth.sevices.UserService;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -30,14 +32,14 @@ public class UserController {
   private ApplicationEventPublisher eventPublisher;
 
   @PostMapping("/signup")
-  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest, HttpServletRequest req) {
+  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
     final String email    = signupRequest.getEmail();
     final String password = signupRequest.getPassword();
     final User   user     = new User(email, password);
 
     try {
       userService.save(user);
-      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(req.getContextPath(), user));
+      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user));
     } catch (UserAlreadyExistException e) {
       return new ResponseEntity<>(
         new ApiResponse(e.getMessage(), e), HttpStatus.BAD_REQUEST
