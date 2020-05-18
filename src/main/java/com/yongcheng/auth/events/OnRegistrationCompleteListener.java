@@ -23,14 +23,20 @@ public class OnRegistrationCompleteListener implements ApplicationListener<OnReg
 
 	@Override
 	public void onApplicationEvent(OnRegistrationCompleteEvent event) {
-    // 1. Generate a UUID as verification token.
-    // 2. Send verification email to user's email.
     String token = UUID.randomUUID().toString();
-    User user    = event.getUser();
+    User   user  = event.getUser();
+
+    generateVerificationToken(token, user);
+    sendConfirmationEmail(token, user);
+  }
+  
+  public void generateVerificationToken(String token, User user) {
     VerificationToken verificationToken = new VerificationToken(token, user);
     
     verificationTokenService.save(verificationToken);
+  }
 
+  public void sendConfirmationEmail(String token, User user) {
     SimpleMailMessage email = new SimpleMailMessage();
     email.setTo(user.getEmail());
     email.setSubject("Registration Confirmation");
@@ -41,5 +47,5 @@ public class OnRegistrationCompleteListener implements ApplicationListener<OnReg
     );
 
     mailSender.send(email);
-	}
+  }
 }
