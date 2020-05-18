@@ -1,0 +1,7 @@
+# MySQL Connector Configurations
+spring.datasource.url = 
+spring.datasource.username = 
+spring.datasource.password = 
+
+# JPA Configurations
+spring.jpa.generate-ddl = 

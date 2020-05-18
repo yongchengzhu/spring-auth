@@ -1,6 +1,5 @@
 package com.yongcheng.auth.controllers;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.yongcheng.auth.events.OnRegistrationCompleteEvent;
@@ -10,8 +9,6 @@ import com.yongcheng.auth.payloads.ApiResponse;
 import com.yongcheng.auth.payloads.SignupRequest;
 import com.yongcheng.auth.sevices.UserService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
