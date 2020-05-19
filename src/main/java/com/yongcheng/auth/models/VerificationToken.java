@@ -28,6 +28,8 @@ public class VerificationToken {
   @JoinColumn(nullable = false, name = "user_id")
   private User user;
 
+  public VerificationToken() {}
+
   private Date calculateExpiraryDate(int expiraryTimeInMinutes) {
     Calendar calendar = Calendar.getInstance();
     

@@ -21,9 +21,7 @@ public class User {
 
   private Boolean enabled;
 
-  public User() {
-
-  }
+  public User() {}
 
   public User(String email, String password) {
     this.email = email;

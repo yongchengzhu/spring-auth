@@ -22,9 +22,7 @@ public class UserService {
 
   public void save(User user) {
     if (emailExists(user.getEmail())) {
-      throw new UserAlreadyExistException(
-        "There is already an account registered with that email: " +
-        user.getEmail());
+      throw new UserAlreadyExistException("There is already an account registered with that email: " + user.getEmail());
     }
 
     user.setPassword(passwordEncoder.encode(user.getPassword()));

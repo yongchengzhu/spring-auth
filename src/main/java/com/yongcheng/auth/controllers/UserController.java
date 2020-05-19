@@ -3,7 +3,6 @@ package com.yongcheng.auth.controllers;
 import javax.validation.Valid;
 
 import com.yongcheng.auth.events.OnRegistrationCompleteEvent;
-import com.yongcheng.auth.exceptions.UserAlreadyExistException;
 import com.yongcheng.auth.models.User;
 import com.yongcheng.auth.payloads.ApiResponse;
 import com.yongcheng.auth.payloads.SignupRequest;
@@ -12,10 +11,10 @@ import com.yongcheng.auth.sevices.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,26 +28,16 @@ public class UserController {
   private ApplicationEventPublisher eventPublisher;
 
   @PostMapping("/signup")
-  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
+  @ResponseStatus(HttpStatus.CREATED)
+  public ApiResponse signup(@RequestBody @Valid SignupRequest signupRequest) {
     final String email    = signupRequest.getEmail();
     final String password = signupRequest.getPassword();
     final User   user     = new User(email, password);
 
-    try {
-      userService.save(user);
-      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user));
-    } catch (UserAlreadyExistException e) {
-      return new ResponseEntity<>(
-        new ApiResponse(e.getMessage(), e), HttpStatus.BAD_REQUEST
-      );
-    } catch (RuntimeException e) {
-      return new ResponseEntity<>(
-        new ApiResponse(e.getMessage(), e), HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    userService.save(user);
 
-    return new ResponseEntity<>(
-      new ApiResponse("User signup successful."), HttpStatus.CREATED
-    );
+    eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user));
+
+    return new ApiResponse("User signup successful");
   }
 }
