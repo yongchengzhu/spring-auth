@@ -1,14 +1,15 @@
 package com.yongcheng.auth.handlers;
 
+import com.yongcheng.auth.exceptions.TokenInvalidException;
+import com.yongcheng.auth.exceptions.TokenNotFoundException;
 import com.yongcheng.auth.exceptions.UserAlreadyExistException;
-import com.yongcheng.auth.payloads.ApiResponse;
+import com.yongcheng.auth.payloads.ExceptionResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -18,18 +19,42 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
   }
 
   @ExceptionHandler({ UserAlreadyExistException.class })
-  public ResponseEntity<Object> handleBadRequest(final RuntimeException ex, final WebRequest request) {
-    final String     body   = ex.getMessage();
+  public ResponseEntity<?> handleBadRequest(final RuntimeException ex) {
+    final String error      = "Bad Request";
+    final String exception  = "UserAlreadyExistException";
+    final String message    = ex.getMessage();
     final HttpStatus status = HttpStatus.BAD_REQUEST;
-
-    return new ResponseEntity<Object>(new ApiResponse(body, ex), status);
+    
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);
   }
 
   @ExceptionHandler({ RuntimeException.class })
-  public ResponseEntity<Object> handleInternalServerError(final RuntimeException ex, final WebRequest request) {
-    final String       body = ex.getMessage();
+  public ResponseEntity<?> handleInternalServerError(final RuntimeException ex) {
+    final String error      = "Internal Server Error";
+    final String exception  = "RuntimeException";
+    final String message    = ex.getMessage();
     final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-    return new ResponseEntity<Object>(new ApiResponse(body, ex), status);
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);
+  }
+
+  @ExceptionHandler({ TokenNotFoundException.class })
+  public ResponseEntity<?> handleNotFound(final RuntimeException ex) {
+    final String error      = "Not Found";
+    final String exception  = "TokenNotFoundException";
+    final String message    = ex.getMessage();
+    final HttpStatus status = HttpStatus.NOT_FOUND;
+
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);    
+  }
+
+  @ExceptionHandler({ TokenInvalidException.class})
+  public ResponseEntity<?> handleInvalidToken(final RuntimeException ex) {
+    final String error      = "Invalid Token";
+    final String exception  = "TokenInvalidException";
+    final String message    = ex.getMessage();
+    final HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);  
   }
 }

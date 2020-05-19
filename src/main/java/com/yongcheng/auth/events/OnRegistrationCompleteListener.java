@@ -25,9 +25,10 @@ public class OnRegistrationCompleteListener implements ApplicationListener<OnReg
 	public void onApplicationEvent(OnRegistrationCompleteEvent event) {
     String token = UUID.randomUUID().toString();
     User   user  = event.getUser();
+    String url   = event.getRequestURL();
 
     generateVerificationToken(token, user);
-    sendConfirmationEmail(token, user);
+    sendConfirmationEmail(token, user, url);
   }
   
   public void generateVerificationToken(String token, User user) {
@@ -36,15 +37,11 @@ public class OnRegistrationCompleteListener implements ApplicationListener<OnReg
     verificationTokenService.save(verificationToken);
   }
 
-  public void sendConfirmationEmail(String token, User user) {
+  public void sendConfirmationEmail(String token, User user, String url) {
     SimpleMailMessage email = new SimpleMailMessage();
     email.setTo(user.getEmail());
     email.setSubject("Registration Confirmation");
-    email.setText(
-      "http://localhost:8080" + 
-      "/api/user/confirm?token" +
-      token
-    );
+    email.setText(url + "/email-confirmation?token=" + token);
 
     mailSender.send(email);
   }
