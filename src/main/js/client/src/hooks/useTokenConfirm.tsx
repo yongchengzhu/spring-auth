@@ -19,9 +19,9 @@ const useTokenConfirm = (props: RouteComponentProps) => {
           : setMessage('Request failed with no response.')
         );
     } else {
-      console.log('Failed: Cannot extract valid token.');
+      setMessage('Failed: Cannot extract valid token.');
     }
-  });
+  }, []);
 
   return [message];
 }

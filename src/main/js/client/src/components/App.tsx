@@ -8,7 +8,7 @@ const App: React.FC<{}> = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/confirm" component={TokenConfirmPage} />
+        <Route path="/email-confirmation" component={TokenConfirmPage} />
         <Route path="/" component={Homepage} />
       </Switch>
     </Router>
