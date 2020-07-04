@@ -23,6 +23,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .csrf()
         .disable()
       .authorizeRequests()
+        .antMatchers("/api/user/auth-test*").authenticated()
         .anyRequest().permitAll();
+      // .and()
+      //   .oauth2ResourceServer().jwt();
   }
 }
