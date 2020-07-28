@@ -67,4 +67,5 @@ public class UserController {
   public void confirmSignup(@RequestParam("token") String token) {
     tokenService.confirm(token);
   }
+  
 }

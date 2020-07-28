@@ -77,5 +77,4 @@ public class VerificationToken {
     this.user = user;
   }
 
-
 }

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
+  
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/**")
@@ -26,5 +27,6 @@ public class MvcConfig implements WebMvcConfigurer {
               : new ClassPathResource("/static/index.html");
           }
       });
-  }  
+  }
+    
 }

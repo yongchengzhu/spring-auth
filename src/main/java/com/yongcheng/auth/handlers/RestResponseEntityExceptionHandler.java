@@ -49,7 +49,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);    
   }
 
-  @ExceptionHandler({ TokenInvalidException.class})
+  @ExceptionHandler({ TokenInvalidException.class })
   public ResponseEntity<?> handleInvalidToken(final RuntimeException ex) {
     final String error      = "Invalid Token";
     final String exception  = "TokenInvalidException";
@@ -58,4 +58,5 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);  
   }
+
 }
