@@ -3,9 +3,13 @@ package com.yongcheng.auth.controllers;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.yongcheng.auth.components.JwtTokenUtil;
 import com.yongcheng.auth.events.OnRegistrationCompleteEvent;
 import com.yongcheng.auth.models.User;
+import com.yongcheng.auth.payloads.SigninRequest;
+import com.yongcheng.auth.payloads.SigninResponse;
 import com.yongcheng.auth.payloads.SignupRequest;
+import com.yongcheng.auth.sevices.JwtUserDetailsService;
 import com.yongcheng.auth.sevices.UserService;
 import com.yongcheng.auth.sevices.VerificationTokenService;
 
@@ -14,6 +18,13 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,6 +47,15 @@ public class UserController {
 
   @Autowired
   private ApplicationEventPublisher eventPublisher;
+
+  @Autowired
+  private AuthenticationManager authenticationManager;
+
+  @Autowired
+  private JwtUserDetailsService jwtUserDetailsService;
+
+  @Autowired
+  private JwtTokenUtil jwtTokenUtil;
 
   Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -66,6 +86,32 @@ public class UserController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void confirmSignup(@RequestParam("token") String token) {
     tokenService.confirm(token);
+  }
+
+  @PostMapping("/signin")
+  @ResponseStatus(HttpStatus.OK)
+  private SigninResponse signin(@RequestBody @Valid SigninRequest signinRequest) throws Exception {
+    final String email = signinRequest.getEmail();
+    final String password = signinRequest.getPassword();
+
+    // Might want to move this to service
+    try {
+      authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(email, password));
+    } catch (DisabledException ex) {
+      throw new DisabledException("Your account is disabled.", ex);
+    } catch (LockedException ex) {
+      throw new LockedException("Your account is locked.", ex);
+    } catch (BadCredentialsException ex) {
+      throw new BadCredentialsException("Bad credentials: wrong username/email or password.", ex);
+    }
+
+    // Authentication successful
+    UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(email);
+    
+    String token = jwtTokenUtil.generateToken(userDetails);
+
+    return new SigninResponse(token);
   }
   
 }

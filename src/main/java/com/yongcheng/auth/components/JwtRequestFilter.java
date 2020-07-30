@@ -40,29 +40,28 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       String username = null;
 
       if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-        // extract the jwt and username from the header.
         token = authorizationHeader.substring(7);
 
-        // Parse token from header and
-        // handle all exceptions from JwtParser::parseClaimsJws
+        // Catch but don't throw errors because we don't want to parse for token
+        // if the endpoint is unprotected.
         try {
           username = jwtTokenUtil.getUsernameFromToken(token);
         } catch (IllegalArgumentException ex) {
-          throw new ServletException("Unable to get JWT token");
+          logger.warn("Received inappropriate JWT token.");
         } catch (ExpiredJwtException ex) {
-          throw new ServletException("JWT token has expired");
+          logger.warn("Received expired JWT token.");
         } catch (UnsupportedJwtException ex) {
-          throw new ServletException("Received unsupported JWT format");
+          logger.warn("Received unsupported JWT token format.");
         } catch (MalformedJwtException ex) {
-          throw new ServletException("JWT was not correctly constructed");
+          logger.warn("Received malformed JWT token.");
         } catch (SignatureException ex) {
-          throw new ServletException("Failed to verify JWT signature");
+          logger.warn("Received corrupted JWT token signature.");
         }
       } else {
-        throw new ServletException("JWT Token does not begin with Bearer string");
+        logger.warn("JWT doesn't begin with 'Bear ' string.");
       }
 
-      if (SecurityContextHolder.getContext().getAuthentication() == null) {
+      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
         if (jwtTokenUtil.validateToken(token, userDetails)) {
@@ -75,6 +74,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
       }
 
+      // At this point, token can either be null or valid.
       filterChain.doFilter(request, response);
   }
 

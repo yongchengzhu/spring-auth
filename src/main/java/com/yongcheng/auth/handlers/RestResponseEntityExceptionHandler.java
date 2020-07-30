@@ -7,7 +7,9 @@ import com.yongcheng.auth.payloads.ExceptionResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -46,7 +48,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     final String message    = ex.getMessage();
     final HttpStatus status = HttpStatus.NOT_FOUND;
 
-    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);    
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);
   }
 
   @ExceptionHandler({ TokenInvalidException.class })
@@ -56,7 +58,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     final String message    = ex.getMessage();
     final HttpStatus status = HttpStatus.UNAUTHORIZED;
 
-    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);  
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);
+  }
+
+  @ExceptionHandler({ DisabledException.class, LockedException.class, BadCredentialsException.class })
+  public ResponseEntity<?> handleUnauthorized(final RuntimeException ex) {
+    final String error = "Unauthorized Request";
+    final String exception = ex.getCause().toString();
+    final String message = ex.getMessage();
+    final HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+    return new ResponseEntity<>(new ExceptionResponse(error, exception, message), status);
   }
 
 }

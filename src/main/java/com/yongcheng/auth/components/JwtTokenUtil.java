@@ -1,6 +1,5 @@
 package com.yongcheng.auth.components;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-public class JwtTokenUtil implements Serializable {
-  
-  private static final long serialVersionUID = -8645954939019651336L;
+public class JwtTokenUtil {
 
   @Value("${jwt.secret}")
   private String secret;
@@ -43,7 +40,6 @@ public class JwtTokenUtil implements Serializable {
 
   public Boolean validateToken(String token, UserDetails userDetails) {
     final String username = getUsernameFromToken(token);
-    // Is this safe enough?
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
   }
 

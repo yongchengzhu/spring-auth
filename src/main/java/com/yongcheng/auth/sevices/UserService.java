@@ -7,6 +7,7 @@ import com.yongcheng.auth.models.User;
 import com.yongcheng.auth.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,25 @@ public class UserService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  public void save(User user) {
+  /**
+   * Used by AuthenticationManager after invoking JwtUserDetailsService.
+   * Hence, should throw BadCredential exception upon failure.
+   * 
+   * @param email
+   * @return
+   * @throws UsernameNotFoundException
+   */
+  public User getUser(String email) throws UsernameNotFoundException {
+    User user = userRepository.findByEmail(email);
+    
+    if (user == null) {
+      throw new UsernameNotFoundException("Bad credentials: wrong username/email or password.");
+    }
+
+    return user;
+  }
+
+  public void save(User user) throws UserAlreadyExistException {
     if (emailExists(user.getEmail())) {
       throw new UserAlreadyExistException("Email already exist: " + user.getEmail());
     }
@@ -33,4 +52,5 @@ public class UserService {
   private boolean emailExists(String email) {
     return userRepository.findByEmail(email) != null;
   }
+
 }

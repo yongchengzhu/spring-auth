@@ -3,8 +3,8 @@ package com.yongcheng.auth.payloads;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-public class SignupRequest {
-  
+public class SigninRequest {
+
   @NotBlank
   @Email
   private String email;
@@ -27,5 +27,5 @@ public class SignupRequest {
   public void setPassword(String password) {
     this.password = password;
   }
-
+  
 }
