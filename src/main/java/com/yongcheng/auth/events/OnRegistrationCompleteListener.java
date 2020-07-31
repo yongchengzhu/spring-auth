@@ -45,4 +45,5 @@ public class OnRegistrationCompleteListener implements ApplicationListener<OnReg
 
     mailSender.send(email);
   }
+  
 }

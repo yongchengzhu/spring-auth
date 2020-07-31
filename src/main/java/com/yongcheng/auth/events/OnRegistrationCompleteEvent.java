@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationEvent;
 
 @SuppressWarnings("serial")
 public class OnRegistrationCompleteEvent extends ApplicationEvent {
+  
   private User user;
   private String requestURL;
 
@@ -31,4 +32,5 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
   public void setRequestURL(String requestURL) {
     this.requestURL = requestURL;
   }
+  
 }

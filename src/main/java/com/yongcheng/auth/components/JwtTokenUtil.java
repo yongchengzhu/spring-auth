@@ -19,7 +19,8 @@ public class JwtTokenUtil {
   @Value("${jwt.secret}")
   private String secret;
 
-  public static final long JWT_TOKEN_VALIDITY = 60 * 60 * 5; // 5 Hours
+  @Value("${jwt.expirationInSeconds}")
+  private Long JWT_TOKEN_VALIDITY;
 
   public String getUsernameFromToken(String token) {
     return getClaimFromToken(token, Claims::getSubject);
