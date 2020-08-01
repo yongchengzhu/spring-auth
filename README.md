@@ -7,7 +7,7 @@
 
 
 ### To-dos
-
-- Delete expired tokens every 24 hours with Spring Job Scheduling Framework.
+- Invoke purgeExpired() on startup.
 - Create annotation to access authentication context.
 - Implement authorities / roles into users.
+- Implement refresh token protocol.

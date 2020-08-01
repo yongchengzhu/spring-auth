@@ -1,6 +1,8 @@
 package com.yongcheng.auth.sevices;
 
+import java.time.Instant;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -12,6 +14,7 @@ import com.yongcheng.auth.repositories.UserRepository;
 import com.yongcheng.auth.repositories.VerificationTokenRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,4 +63,11 @@ public class VerificationTokenService {
   public boolean tokenUsed(User user) {
     return user.getEnabled();
   }
+
+  @Scheduled(cron = "${cron.purgeExpired}")
+  public void purgeExpired() {
+    Date now = Date.from(Instant.now());
+    verificationTokenRepository.deleteAllExpiredSince(now);
+  }
+
 }
