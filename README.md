@@ -7,7 +7,6 @@
 
 
 ### To-dos
-- Invoke purgeExpired() on startup.
 - Create annotation to access authentication context.
 - Implement authorities / roles into users.
 - Implement refresh token protocol.
